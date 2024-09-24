@@ -22,39 +22,51 @@ http {
     #access_log  logs/access.log  main;
 
     sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
     keepalive_timeout  65;
 
     #gzip  on;
+
+    # HTTP server block (for redirecting HTTP to HTTPS)
+    server {
+        listen 80;
+        server_name salacount.ddns.net;
+
+        # Redirect all HTTP requests to HTTPS
+        return 301 https://$host$request_uri;
+    }
 
     # HTTPS server block
     server {
         listen 443 ssl;
         server_name salacount.ddns.net;
 
+        # SSL certificate and private key files
         ssl_certificate "E:/Desktop/project/salary/SSL/salacount.ddns.net-chain.pem";
         ssl_certificate_key "E:/Desktop/project/salary/SSL/salacount.ddns.net-key.pem";
 
+        # SSL protocol and ciphers
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
         ssl_prefer_server_ciphers on;
 
+        # Website root directory and index file
         root E:/Desktop/project/salary;
         index index.html;
 
+        # Custom error pages
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
             root   html;
         }
     }
 
-    # HTTP block to redirect all requests to HTTPS
-    server {
-        listen 80;
-        server_name salacount.ddns.net;
-
-        return 301 https://$host$request_uri;
-    }
+    # Additional server configurations can go here (e.g., other virtual hosts)
 }
+
+
 
 # Configure Nginx on Windows for Public Access to a Static Website
 
