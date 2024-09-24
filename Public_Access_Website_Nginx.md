@@ -1,3 +1,61 @@
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    # HTTPS server block
+    server {
+        listen 443 ssl;
+        server_name salacount.ddns.net;
+
+        ssl_certificate "E:/Desktop/project/salary/SSL/salacount.ddns.net-chain.pem";
+        ssl_certificate_key "E:/Desktop/project/salary/SSL/salacount.ddns.net-key.pem";
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        root E:/Desktop/project/salary;
+        index index.html;
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+
+    # HTTP block to redirect all requests to HTTPS
+    server {
+        listen 80;
+        server_name salacount.ddns.net;
+
+        return 301 https://$host$request_uri;
+    }
+}
+
 # Configure Nginx on Windows for Public Access to a Static Website
 
 ## Introduction
