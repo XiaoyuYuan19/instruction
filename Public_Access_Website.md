@@ -201,6 +201,17 @@ To enable HTTPS, we will use **win-acme** to obtain a free SSL certificate from 
 - Visit `https://yourname.ddns.net` to verify that SSL is correctly configured and that your site is accessible via HTTPS.
 
 ---
+## 7. 其他注意事项
+
+### 7.1 IP绑定
+
+路由器重启后，本机IP可能会发生变化，例如从192.168.1.103改变为192.168.1.100，导致路由器端口转发设置失效。
+为了动态适应，在路由器设置页面找到“IP预留/IP与MAC绑定”功能，设置自己的物理地址和IP绑定。
+
+查看物理地址的方法：在cmd中输入 ipconfig /all，找到物理地址。
+
+
+---
 
 ## Conclusion
 
