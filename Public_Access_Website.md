@@ -1,3 +1,110 @@
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    # HTTP server block for salacount.ddns.net (redirects HTTP to HTTPS)
+    server {
+        listen 80;
+        server_name salacount.ddns.net;
+
+        # Redirect all HTTP requests to HTTPS
+        return 301 https://$host$request_uri;
+    }
+
+    # HTTPS server block for salacount.ddns.net
+    server {
+        listen 443 ssl;
+        server_name salacount.ddns.net;
+
+        # SSL certificate and private key files
+        ssl_certificate "E:/Desktop/project/salary/SSL/salacount.ddns.net-chain.pem";
+        ssl_certificate_key "E:/Desktop/project/salary/SSL/salacount.ddns.net-key.pem";
+
+        # SSL protocol and ciphers
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        # Website root directory and index file
+        root E:/Desktop/project/salary;
+        index index.html;
+
+        # Custom error pages
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+
+    # HTTP server block for aichar.ddns.net (redirects HTTP to HTTPS)
+    server {
+        listen 80;
+        server_name aichar.ddns.net;
+
+        # Redirect all HTTP requests to HTTPS
+        return 301 https://$host$request_uri;
+    }
+
+    # HTTPS server block for aichar.ddns.net
+    server {
+        listen 443 ssl;
+        server_name aichar.ddns.net;
+
+        # SSL certificate and private key files (you will need to replace these paths with your own certificates)
+        ssl_certificate "E:/Desktop/project/aichar/SSL/aichar.ddns.net-chain.pem";
+        ssl_certificate_key "E:/Desktop/project/aichar/SSL/aichar.ddns.net-key.pem";
+
+        # SSL protocol and ciphers
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        # Proxy requests to the Flask application running on 127.0.0.1:5000
+        location / {
+            proxy_pass http://127.0.0.1:5000;  # Forward requests to the Flask app
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Custom error pages
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+
+    # Additional server configurations can go here (e.g., other virtual hosts)
+}
+
 # Configure Nginx on Windows for Public Access to a Static Website with SSL and Dynamic DNS
 
 ## Introduction
